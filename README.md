@@ -1,5 +1,7 @@
 # fiber documentation
 
+## this is open for public 🤙 🚀
+
 installation: 
 ```shellsession
 go get github.com/gofiber/fiber/v2
