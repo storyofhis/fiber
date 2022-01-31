@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/storyofhis/microservice-go/database"
 	"github.com/storyofhis/microservice-go/handler"
+	"github.com/storyofhis/microservice-go/routes"
 )
 
 func SetupRoutes(app *fiber.App) {
@@ -13,9 +15,19 @@ func SetupRoutes(app *fiber.App) {
 			return handler.NewErrorMessage(c)
 		}
 	})
+	
+	// Parameters
+	app.Get("/:value", handler.GetParams)
+	app.Get("/api/list", handler.GetAPI)
+	app.Post("/api/register", handler.PostAPI)
+
+	// user endpoints 
+	app.Get("/api/users", routes.CreateUser)
 }
 
 func main() {
+	database.ConnectDb()
+
     app := fiber.New(
 		fiber.Config{
 			Prefork:true,
@@ -27,11 +39,6 @@ func main() {
 	)
 	
 	SetupRoutes(app)
-
-	// Parameters
-	app.Get("/:value", handler.GetParams)
-	app.Get("/api/list", handler.GetAPI)
-	app.Post("/api/register", handler.PostAPI)
 
     app.Listen(":8080")
 }
