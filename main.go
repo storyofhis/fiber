@@ -1,27 +1,37 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/storyofhis/microservice-go/handler"
+)
+
+func SetupRoutes(app *fiber.App) {
+	app.Get("/", func(c *fiber.Ctx) error {
+		if c.Params("value") != "" {
+			return c.SendString("Hello, World 👋!")
+		}else {
+			return handler.NewErrorMessage(c)
+		}
+	})
+}
 
 func main() {
-    app := fiber.New()
-
-	// Simple route
-    app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("Hello, World 👋!")
-    })
+    app := fiber.New(
+		fiber.Config{
+			Prefork:true,
+			CaseSensitive: true,
+			StrictRouting: true,
+			ServerHeader:  "Fiber",
+			AppName: "Test App v1.0.1",
+		},
+	)
+	
+	SetupRoutes(app)
 
 	// Parameters
-	app.Get("/:value", func(c *fiber.Ctx) error {
-		return c.SendString("value: " + c.Params("value"))
-		// => Get request with value: hello world
-	})
+	app.Get("/:value", handler.GetParams)
+	app.Get("/api/list", handler.GetAPI)
+	app.Post("/api/register", handler.PostAPI)
 
-	app.Get("/:name?", func(c *fiber.Ctx) error {
-		if c.Params("name") != "" {
-		  return c.SendString("Hello " + c.Params("name"))
-		  // => Hello john
-		}
-		return c.SendString("Where is john?")
-	})
     app.Listen(":8080")
 }
